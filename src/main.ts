@@ -1,5 +1,6 @@
 import "./style.css";
 
+<<<<<<< HEAD
 /* === Typer === */
 type OmdbSearchItem = {
   Title: string;
@@ -82,9 +83,81 @@ async function loadMovieDetail() {
     app.appendChild(wrapper);
   } catch (err) {
     app.innerHTML = `<p style="color:red;">Fel: ${(err as Error).message}</p>`;
-  }
-}
+=======
+fetch("https://www.omdbapi.com/?s=tt3896198&apikey=768dbcda");
+// async function loadMovie() {
+//   const app = document.querySelector<HTMLDivElement>("#app")!;
+//   app.innerHTML = "<h2>Laddar filmdata...</h2>";
 
+//   try {
+//     const res = await fetch("https://www.omdbapi.com/?i=tt3896198&apikey=768dbcda");
+//     if (!res.ok) throw new Error("Kunde inte hämta data");
+//     const data = await res.json();
+
+//     app.innerHTML = `
+//       <h1>${data.Title}</h1>
+//       <p>År: ${data.Year}</p>
+//       <img src="${data.Poster}" alt="${data.Title}" class="logo vanilla" />
+//     `;
+//   } catch (err) {
+//     app.innerHTML = `<p style="color:red;">Fel: ${(err as Error).message}</p>`;
+//   }
+// }
+
+//   const Movie = () => {
+
+//   const Movies = innerHtml
+
+//   for(let i = 0; i < length.data; i++ {
+//     const div = document.createElement("div");
+//     const diva = document.createElement("div");
+//     const image = document.createElement("img");
+//     const p = document.createElement("p");
+
+//     div.appendChild(diva);
+//     div.appendChild(diva);
+//     div.appendChild(image);
+//     p.appendChild(image);
+//     console.log(Movie);
+
+//   })
+
+// };
+// loadMovie();
+
+// API KEY: https://www.omdbapi.com/?i=tt3896198&apikey=768dbcda
+
+fetch("http://www.omdbapi.com/?apikey=768dbcda&s=lord")
+  .then((response) => response.json())
+  .then((data: OmdbResponse) => {
+    createHtml(data.Search);
+  });
+
+const Movie = () => {
+  const section = document.getElementById("show");
+  const movie = document.getElementById("movies");
+
+  for (let i = 0; i < Movie.length; i++) {
+    const movie = [i];
+
+    const div = document.createElement("div");
+
+    const img = document.createElement("img");
+
+    const p = document.createElement("p");
+
+    // lägg till elementen i div
+    div.appendChild(p);
+    div.appendChild(img);
+    div.appendChild(p);
+
+    // lägg till div i containern
+    div.appendChild(div);
+>>>>>>> bd5dbd5798e959bd2db9bc471f031e6f28160717
+  }
+};
+
+<<<<<<< HEAD
 /* === Lista FLERA filmer (sök s=) === */
 async function loadMoviesList(query: string) {
   // Skapa/återanvänd en sektion under detaljvyn
@@ -133,3 +206,43 @@ async function loadMoviesList(query: string) {
   await loadMovieDetail();   // visar en film med i=...
   await loadMoviesList("lord"); // listar sökresultat för "lord"
 })();
+=======
+// API KEY: https://www.omdbapi.com/?i=tt3896198&apikey=768dbcda
+
+type Movie = {
+  Poster: string;
+  Title: string;
+  isSelected: boolean;
+};
+
+type OmdbResponse = {
+  Search: Movie[];
+  totalResults: string;
+};
+
+const createHtml = (movies: Movie[]) => {
+  const moviesSection = document.getElementById("movies");
+
+  if (moviesSection) {
+    moviesSection.innerHTML = "";
+  }
+
+  movies.forEach((movie, i) => {
+    const movieContainer = document.createElement("div");
+    const imgContainer = document.createElement("div");
+    const img = document.createElement("img");
+    const title = document.createElement("h2");
+
+    img.src = movie.Poster;
+    img.alt = movie.Title;
+    title.innerHTML = movie.Title;
+    movieContainer.className = "movie";
+    imgContainer.className = "img-container";
+
+    imgContainer.appendChild(img);
+    movieContainer.appendChild(title);
+    movieContainer.appendChild(imgContainer);
+    moviesSection?.appendChild(movieContainer);
+  });
+};
+>>>>>>> bd5dbd5798e959bd2db9bc471f031e6f28160717
