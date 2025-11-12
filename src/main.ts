@@ -1,49 +1,45 @@
 import "./style.css";
 
-async function loadMovie() {
-  const app = document.querySelector<HTMLDivElement>("#app")!;
-  app.innerHTML = "<h2>Laddar filmdata...</h2>";
+// async function loadMovie() {
+//   const app = document.querySelector<HTMLDivElement>("#app")!;
+//   app.innerHTML = "<h2>Laddar filmdata...</h2>";
 
-  try {
-    const res = await fetch("https://www.omdbapi.com/?i=tt3896198&apikey=768dbcda");
-    if (!res.ok) throw new Error("Kunde inte hämta data");
-    const data = await res.json();
+//   try {
+//     const res = await fetch("https://www.omdbapi.com/?i=tt3896198&apikey=768dbcda");
+//     if (!res.ok) throw new Error("Kunde inte hämta data");
+//     const data = await res.json();
 
-    app.innerHTML = `
-      <h1>${data.Title}</h1>
-      <p>År: ${data.Year}</p>
-      <img src="${data.Poster}" alt="${data.Title}" class="logo vanilla" />
-    `;
-  } catch (err) {
-    app.innerHTML = `<p style="color:red;">Fel: ${(err as Error).message}</p>`;
-  }
-}
+//     app.innerHTML = `
+//       <h1>${data.Title}</h1>
+//       <p>År: ${data.Year}</p>
+//       <img src="${data.Poster}" alt="${data.Title}" class="logo vanilla" />
+//     `;
+//   } catch (err) {
+//     app.innerHTML = `<p style="color:red;">Fel: ${(err as Error).message}</p>`;
+//   }
+// }
 
-  const Movie = () => {
+//   const Movie = () => {
 
-  const Movies = innerHtml 
+//   const Movies = innerHtml
 
+//   for(let i = 0; i < length.data; i++ {
+//     const div = document.createElement("div");
+//     const diva = document.createElement("div");
+//     const image = document.createElement("img");
+//     const p = document.createElement("p");
 
-  for(let i = 0; i < length.data; i++ {
-    const div = document.createElement("div");
-    const diva = document.createElement("div");
-    const image = document.createElement("img");
-    const p = document.createElement("p");
+//     div.appendChild(diva);
+//     div.appendChild(diva);
+//     div.appendChild(image);
+//     p.appendChild(image);
+//     console.log(Movie);
 
+//   })
 
+// };
+// loadMovie();
 
-
-    div.appendChild(diva);
-    div.appendChild(diva);
-    div.appendChild(image);
-    p.appendChild(image);
-    console.log(Movie);
-
-  })
-
-
-};
- 
 // API KEY: https://www.omdbapi.com/?i=tt3896198&apikey=768dbcda
 
 fetch("http://www.omdbapi.com/?apikey=768dbcda&s=lord")
@@ -88,4 +84,3 @@ const createHtml = (movies: Movie[]) => {
     moviesSection?.appendChild(movieContainer);
   });
 };
-loadMovie();
