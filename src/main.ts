@@ -1,14 +1,23 @@
 import "./style.css";
 
-fetch("https://www.omdbapi.com/?s=tt3896198&apikey=768dbcda")
-  .then((response) => response.json())
+async function loadMovie() {
+  const app = document.querySelector<HTMLDivElement>("#app")!;
+  app.innerHTML = "<h2>Laddar filmdata...</h2>";
 
-  .then((data) => {
-    console.log(data);
-  });
+  try {
+    const res = await fetch("https://www.omdbapi.com/?i=tt3896198&apikey=768dbcda");
+    if (!res.ok) throw new Error("Kunde inte hämta data");
+    const data = await res.json();
 
-/**
-  const section = document.getElementById("show");
+    app.innerHTML = `
+      <h1>${data.Title}</h1>
+      <p>År: ${data.Year}</p>
+      <img src="${data.Poster}" alt="${data.Title}" class="logo vanilla" />
+    `;
+  } catch (err) {
+    app.innerHTML = `<p style="color:red;">Fel: ${(err as Error).message}</p>`;
+  }
+}
 
   const Movie = () => {
 
@@ -34,7 +43,7 @@ fetch("https://www.omdbapi.com/?s=tt3896198&apikey=768dbcda")
 
 
 };
- */
+ 
 // API KEY: https://www.omdbapi.com/?i=tt3896198&apikey=768dbcda
 
 fetch("http://www.omdbapi.com/?apikey=768dbcda&s=lord")
@@ -79,3 +88,4 @@ const createHtml = (movies: Movie[]) => {
     moviesSection?.appendChild(movieContainer);
   });
 };
+loadMovie();
