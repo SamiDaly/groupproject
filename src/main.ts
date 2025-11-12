@@ -15,7 +15,7 @@ const Movie = () => {
   const image = document.createElement("img");
   const p = document.createElement("p");
 
-  div.appendChild(div);
+  diva.appendChild(div);
   div.appendChild(p);
   div.appendChild(image);
   image.appendChild(p);
