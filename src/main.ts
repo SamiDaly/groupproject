@@ -1,52 +1,14 @@
 import "./style.css";
+import { el, safePoster } from "./htmlUtils/utils";
+import { fetchMovies, fetchMovieDetails } from "./apiKey/api";
+import type { OmdbMovieDetail, OmdbSearchResponse } from "./Types/type";
 
-/* === Typer === */
-type OmdbSearchItem = {
-  Title: string;
-  Year: string;
-  imdbID: string;
-  Type: string;
-  Poster: string;
-};
-
-type OmdbSearchResponse =
-  | { Response: "True"; Search: OmdbSearchItem[]; totalResults: string }
-  | { Response: "False"; Error: string };
-
-type OmdbMovieDetail = {
-  Title: string;
-  Year: string;
-  Plot?: string;
-  Genre?: string;
-  Runtime?: string;
-  Poster: string;
-  imdbRating?: string;
-  imdbVotes?: string;
-  Response: "True" | "False";
-  Error?: string;
-};
-
-/* === Hjälpare === */
+// Baslayout
 const app = document.querySelector<HTMLDivElement>("#app")!;
-function el<K extends keyof HTMLElementTagNameMap>(
-  tag: K,
-  opts: { className?: string; text?: string } = {}
-) {
-  const node = document.createElement(tag);
-  if (opts.className) node.className = opts.className;
-  if (opts.text) node.textContent = opts.text;
-  return node;
-}
-
-const API_KEY = "768dbcda";
-const placeholderPoster = "/vite.svg";
-const safePoster = (src: string) => (src && src !== "N/A" ? src : placeholderPoster);
-
-/* === Baslayout === */
 app.innerHTML = `
   <h1>🎬 Movie Search</h1>
   <div class="searchbar">
-    <input id="search" type="text" placeholder="Search for a movie (e.g. batman, dune, avatar)..." />
+    <input id="search" type="text" placeholder="Search for a movie..." />
     <button id="btn">Search</button>
   </div>
   <p class="helper" id="helper"></p>
@@ -64,14 +26,29 @@ function setHelper(msg: string) {
   helperText.textContent = msg;
 }
 
-/* === Detaljvy för EN film === */
+// Render-funktion för flera filmer
+function renderMovies(data: OmdbSearchResponse) {
+  if (data.Response === "False") {
+    moviesSection.innerHTML = `<p>No results.</p>`;
+    return;
+  }
+
+  moviesSection.innerHTML = data.Search.map(
+    (m) => `
+      <article class="movie-card" data-imdb="${m.imdbID}">
+        <img src="${safePoster(m.Poster)}" alt="${m.Title}" />
+        <h3>${m.Title}</h3>
+        <p>${m.Year} · ${m.Type}</p>
+      </article>
+    `,
+  ).join("");
+}
+
+// Render-funktion för detaljvy
 async function loadDetails(imdbID: string) {
   showSection.innerHTML = `<p>Loading details...</p>`;
   try {
-    const url = `https://www.omdbapi.com/?apikey=${API_KEY}&i=${encodeURIComponent(imdbID)}&plot=full`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data: OmdbMovieDetail = await res.json();
+    const data: OmdbMovieDetail = await fetchMovieDetails(imdbID);
 
     if (data.Response === "False") {
       showSection.innerHTML = `<p style="color:red;">Could not load details${data.Error ? `: ${data.Error}` : ""}.</p>`;
@@ -104,63 +81,34 @@ async function loadDetails(imdbID: string) {
   }
 }
 
-/* === Sök flera filmer === */
-async function searchMovies(query: string) {
-  moviesSection.innerHTML = `<p>Loading...</p>`;
-  showSection.innerHTML = "";
-  setHelper("");
-
-  try {
-    const url = `https://www.omdbapi.com/?apikey=${API_KEY}&s=${encodeURIComponent(query)}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data: OmdbSearchResponse = await res.json();
-
-    if (data.Response === "False") {
-      moviesSection.innerHTML = `<p>No results for "${query}".</p>`;
-      return;
-    }
-
-    moviesSection.innerHTML = data.Search
-      .map(
-        (m) => `
-        <article class="movie-card" data-imdb="${m.imdbID}">
-          <img src="${safePoster(m.Poster)}" alt="${m.Title}" />
-          <h3>${m.Title}</h3>
-          <p>${m.Year} · ${m.Type}</p>
-        </article>
-      `
-      )
-      .join("");
-
-    setHelper(`Showing ${data.Search.length} result(s). Click a card to see details.`);
-
-  } catch (err) {
+// Initiala filmer vid sidladdning
+fetchMovies("lord")
+  .then(renderMovies)
+  .catch((err) => {
     console.error(err);
-    moviesSection.innerHTML = `<p style="color:red;">Something went wrong. ${(err as Error).message}</p>`;
-  }
-}
+    setHelper("Failed to load initial movies.");
+  });
 
-/* === Events === */
+// Sökfunktion
 searchButton.addEventListener("click", () => {
   const q = searchInput.value.trim();
   if (!q) {
-    setHelper("Type something to search (e.g. batman).");
+    setHelper("Type something to search.");
     return;
   }
-  searchMovies(q);
+  fetchMovies(q)
+    .then(renderMovies)
+    .catch(() => setHelper("Something went wrong."));
 });
 
 searchInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") searchButton.click();
 });
 
+// Klick på filmkort för detaljvy
 moviesSection.addEventListener("click", (e) => {
   const card = (e.target as HTMLElement).closest<HTMLElement>(".movie-card");
   if (!card) return;
   const id = card.getAttribute("data-imdb");
   if (id) loadDetails(id);
 });
-
-/* === Förifyll med exempel === */
-searchMovies("lord");
